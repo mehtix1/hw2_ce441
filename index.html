@@ -7,7 +7,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const output = document.getElementById('output');
-            const ws = new WebSocket('ws://<server-address>/admin/ws'); // Replace <server-address> with the actual server address
+            const ws = new WebSocket('ws://127.0.0.1/admin/ws'); // Replace <server-address> with the actual server address
 
             ws.onopen = () => {
                 console.log('WebSocket connection opened.');
