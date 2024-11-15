@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+    <script>
+        function connectAndRetrieveFlag() {
+            const ws = new WebSocket('ws://<server-address>/admin/ws'); // Replace <server-address> with the actual server address
+
+            ws.onopen = () => {
+                console.log('WebSocket connection opened.');
+                ws.send('flag'); // Request the flag
+            };
+
+            ws.onmessage = (event) => {
+                console.log('Message from server:', event.data);
+                if (event.data.includes('flag')) {
+                    document.getElementById('output').textContent = 'Flag: ' + event.data;
+                    ws.close();
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket connection closed.');
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                document.getElementById('output').textContent = 'Error: Could not connect to WebSocket.';
+            };
+        }
+    </script>
+</head>
+<body>
+    <h1>Retrieve Flag</h1>
+    <button onclick="connectAndRetrieveFlag()">Get Flag</button>
+    <p id="output"></p>
+</body>
+</html>
