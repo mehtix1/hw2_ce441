@@ -7,15 +7,16 @@
 </head>
 <body>
     <h1>WebSocket Test</h1>
-    <button id="sendMessageBtn">Send 'increment' message</button>
 
     <script>
         // Initialize the WebSocket connection
         const socket = new WebSocket('ws://ce441-web.spchallenge.ir:8080/admin/ws');
 
-        // When the socket opens, log it and send the message
+        // When the socket opens, log it and send the message 'increment'
         socket.onopen = function(event) {
             console.log('WebSocket connection established');
+            socket.send('increment');
+            console.log('Message "increment" sent automatically');
         };
 
         // Listen for messages from the server
@@ -32,16 +33,6 @@
         socket.onerror = function(error) {
             console.log('WebSocket Error: ', error);
         };
-
-        // Event listener for the button to send 'increment' message
-        document.getElementById('sendMessageBtn').addEventListener('click', function() {
-            if (socket.readyState === WebSocket.OPEN) {
-                socket.send('increment');
-                console.log('Message "increment" sent');
-            } else {
-                console.log('WebSocket is not open');
-            }
-        });
     </script>
 </body>
 </html>
