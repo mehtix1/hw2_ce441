@@ -3,40 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retrieve Flag</title>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const output = document.getElementById('output');
-            const ws = new WebSocket('ws://127.0.0.1/admin/ws'); // Replace <server-address> with the actual server address
-
-            ws.onopen = () => {
-                console.log('WebSocket connection opened.');
-                ws.send('flag'); // Request the flag
-            };
-
-            ws.onmessage = (event) => {
-                console.log('Message from server:', event.data);
-                if (event.data.includes('flag')) {
-                    output.textContent = 'Flag: ' + event.data;
-                } else {
-                    output.textContent = 'Response: ' + event.data;
-                }
-                ws.close();
-            };
-
-            ws.onclose = () => {
-                console.log('WebSocket connection closed.');
-            };
-
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                output.textContent = 'Error: Could not connect to WebSocket.';
-            };
-        });
-    </script>
+    <title>Hello World</title>
 </head>
 <body>
-    <h1>Retrieve Flag</h1>
-    <p id="output">Connecting...</p>
+    <h1>Hello, World!</h1>
 </body>
 </html>
